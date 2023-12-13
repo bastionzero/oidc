@@ -162,7 +162,7 @@ func NativeClient(id string, redirectURIs ...string) *Client {
 		grantTypes:                     []oidc.GrantType{oidc.GrantTypeCode, oidc.GrantTypeRefreshToken},
 		accessTokenType:                op.AccessTokenTypeBearer,
 		devMode:                        false,
-		idTokenUserinfoClaimsAssertion: false,
+		idTokenUserinfoClaimsAssertion: true,
 		clockSkew:                      0,
 	}
 }
@@ -188,7 +188,7 @@ func WebClient(id, secret string, redirectURIs ...string) *Client {
 		grantTypes:                     []oidc.GrantType{oidc.GrantTypeCode, oidc.GrantTypeRefreshToken, oidc.GrantTypeTokenExchange},
 		accessTokenType:                op.AccessTokenTypeBearer,
 		devMode:                        false,
-		idTokenUserinfoClaimsAssertion: false,
+		idTokenUserinfoClaimsAssertion: true,
 		clockSkew:                      0,
 	}
 }
@@ -206,7 +206,7 @@ func DeviceClient(id, secret string) *Client {
 		grantTypes:                     []oidc.GrantType{oidc.GrantTypeDeviceCode},
 		accessTokenType:                op.AccessTokenTypeBearer,
 		devMode:                        false,
-		idTokenUserinfoClaimsAssertion: false,
+		idTokenUserinfoClaimsAssertion: true,
 		clockSkew:                      0,
 	}
 }
