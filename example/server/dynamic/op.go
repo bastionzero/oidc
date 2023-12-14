@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi/v5"
 	"golang.org/x/text/language"
@@ -26,18 +27,32 @@ var (
 	}
 )
 
-func init() {
-	storage.RegisterClients(
-		storage.NativeClient("native"),
-		storage.WebClient("web", "secret"),
-		storage.WebClient("api", "secret"),
-	)
-}
-
 func main() {
+	callbackPath := os.Getenv("AUTH_CALLBACK_PATH")
+	if callbackPath == "" {
+		callbackPath = "/auth/callback"
+	}
+	redirectPort := os.Getenv("REDIRECT_PORT")
+	if redirectPort == "" {
+		redirectPort = "9999"
+	}
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "9998"
+	}
+
+	// Register some clients with the supplied redirect port and callback path
+	redirectURI := fmt.Sprintf("http://localhost:%s%s", redirectPort, callbackPath)
+	nativeClient := storage.NativeClient("native", redirectURI)
+	clientSecret := "secret"
+	webClient := storage.WebClient("web", clientSecret, redirectURI)
+	storage.RegisterClients(
+		nativeClient,
+		webClient,
+	)
+
 	ctx := context.Background()
 
-	port := "9998"
 	issuers := make([]string, len(hostnames))
 	for i, hostname := range hostnames {
 		issuers[i] = fmt.Sprintf("http://%s:%s/", hostname, port)
