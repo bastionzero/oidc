@@ -93,6 +93,10 @@ func main() {
 	//so we will direct all calls to /login to the login UI
 	router.Mount("/login/", http.StripPrefix("/login", l.router))
 
+	// Register control router
+	c := NewControl()
+	router.Mount("/control/", http.StripPrefix("/control", c.router))
+
 	//we register the http handler of the OP on the root, so that the discovery endpoint (/.well-known/openid-configuration)
 	//is served on the correct path
 	//

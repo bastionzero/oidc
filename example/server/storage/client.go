@@ -13,8 +13,8 @@ var (
 		return "/login/username?authRequestID=" + id
 	}
 
-	// clients to be used by the storage interface
-	clients = map[string]*Client{}
+	// Clients to be used by the storage interface
+	Clients = map[string]*Client{}
 )
 
 // Client represents the storage model of an OAuth/OIDC client
@@ -31,6 +31,7 @@ type Client struct {
 	accessTokenType                op.AccessTokenType
 	devMode                        bool
 	idTokenUserinfoClaimsAssertion bool
+	idTokenLifetime                time.Duration
 	clockSkew                      time.Duration
 	postLogoutRedirectURIGlobs     []string
 	redirectURIGlobs               []string
@@ -83,9 +84,14 @@ func (c *Client) AccessTokenType() op.AccessTokenType {
 	return c.accessTokenType
 }
 
+// SetIDTokenLifetime sets the lifetime of the client's id_tokens
+func (c *Client) SetIDTokenLifetime(lifetime time.Duration) {
+	c.idTokenLifetime = lifetime
+}
+
 // IDTokenLifetime must return the lifetime of the client's id_tokens
 func (c *Client) IDTokenLifetime() time.Duration {
-	return 1 * time.Hour
+	return c.idTokenLifetime
 }
 
 // DevMode enables the use of non-compliant configs such as redirect_uris (e.g. http schema for user agent client)
@@ -135,7 +141,7 @@ func (c *Client) ClockSkew() time.Duration {
 // no race conditions.
 func RegisterClients(registerClients ...*Client) {
 	for _, client := range registerClients {
-		clients[client.id] = client
+		Clients[client.id] = client
 	}
 }
 
@@ -163,6 +169,7 @@ func NativeClient(id string, redirectURIs ...string) *Client {
 		accessTokenType:                op.AccessTokenTypeBearer,
 		devMode:                        false,
 		idTokenUserinfoClaimsAssertion: true,
+		idTokenLifetime:                1 * time.Hour,
 		clockSkew:                      0,
 	}
 }
@@ -189,6 +196,7 @@ func WebClient(id, secret string, redirectURIs ...string) *Client {
 		accessTokenType:                op.AccessTokenTypeBearer,
 		devMode:                        false,
 		idTokenUserinfoClaimsAssertion: true,
+		idTokenLifetime:                1 * time.Hour,
 		clockSkew:                      0,
 	}
 }
@@ -207,6 +215,7 @@ func DeviceClient(id, secret string) *Client {
 		accessTokenType:                op.AccessTokenTypeBearer,
 		devMode:                        false,
 		idTokenUserinfoClaimsAssertion: true,
+		idTokenLifetime:                1 * time.Hour,
 		clockSkew:                      0,
 	}
 }

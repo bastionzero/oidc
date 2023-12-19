@@ -90,7 +90,7 @@ func (s *publicKey) Key() any {
 }
 
 func NewStorage(userStore UserStore) *Storage {
-	return NewStorageWithClients(userStore, clients)
+	return NewStorageWithClients(userStore, Clients)
 }
 
 func NewStorageWithClients(userStore UserStore, clients map[string]*Client) *Storage {
