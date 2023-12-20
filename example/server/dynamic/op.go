@@ -109,6 +109,8 @@ func main() {
 		Addr:    ":" + port,
 		Handler: router,
 	}
+
+	log.Println("Started on port", port)
 	err = server.ListenAndServe()
 	if err != nil {
 		log.Fatal(err)
