@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"log"
 	"time"
 
 	jose "github.com/go-jose/go-jose/v3"
@@ -98,7 +99,7 @@ func (s *multiStorage) CreateAccessToken(ctx context.Context, request op.TokenRe
 
 // CreateAccessAndRefreshTokens implements the op.Storage interface
 // it will be called for all requests able to return an access and refresh token (Authorization Code Flow, Refresh Token Request)
-func (s *multiStorage) CreateAccessAndRefreshTokens(ctx context.Context, request op.TokenRequest, currentRefreshToken string) (accessTokenID string, newRefreshToken string, expiration time.Time, err error) {
+func (s *multiStorage) CreateAccessAndRefreshTokens(ctx context.Context, request op.TokenRequest, currentRefreshToken string) (string, string, time.Time, error) {
 	storage, err := s.storageFromContext(ctx)
 	if err != nil {
 		return "", "", time.Time{}, err
@@ -273,9 +274,12 @@ func (s *multiStorage) Health(ctx context.Context) error {
 }
 
 func (s *multiStorage) storageFromContext(ctx context.Context) (*Storage, *oidc.Error) {
-	storage, ok := s.issuers[op.IssuerFromContext(ctx)]
+	issuer := op.IssuerFromContext(ctx)
+	storage, ok := s.issuers[issuer]
 	if !ok {
+		log.Printf("issuer %v is invalid", issuer)
 		return nil, oidc.ErrInvalidRequest().WithDescription("invalid issuer")
 	}
+	log.Printf("issuer %v is valid", issuer)
 	return storage, nil
 }
