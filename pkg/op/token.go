@@ -2,6 +2,7 @@ package op
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"github.com/zitadel/oidc/v3/pkg/crypto"
@@ -40,7 +41,9 @@ func CreateTokenResponse(ctx context.Context, request IDTokenRequest, client Cli
 			return nil, err
 		}
 	}
-	idToken, err := CreateIDToken(ctx, IssuerFromContext(ctx), request, client.IDTokenLifetime(), accessToken, code, creator.Storage(), client)
+	idTokenLifeTime := client.IDTokenLifetime()
+	log.Printf("creating id token for client ID %v with lifetime %v", client.GetID(), idTokenLifeTime)
+	idToken, err := CreateIDToken(ctx, IssuerFromContext(ctx), request, idTokenLifeTime, accessToken, code, creator.Storage(), client)
 	if err != nil {
 		return nil, err
 	}
